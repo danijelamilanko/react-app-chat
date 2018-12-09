@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import Tabs from '../../components/Tabs/Tabs';
 import Messages from "../../components/Messages/Messages";
 import classes from './Chat.module.css';
+import MessageInput from "../../components/MessageInput/MessageInput";
 
 const tabs = [
     { title: 'Name 1' },
@@ -9,11 +10,17 @@ const tabs = [
 ];
 
 class Chat extends Component {
+
+    messageSendHandler = () => {
+        alert('Message sent');
+    }
+
     render () {
         return (
             <div className={classes.Chat}>
                 <Tabs tabs={tabs}/>
                 <Messages/>
+                <MessageInput messageSend={this.messageSendHandler} />
             </div>
         );
     }

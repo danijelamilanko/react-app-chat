@@ -2,7 +2,7 @@ import React from 'react';
 
 import classes from './Tab.module.css';
 
-const Tab = (props) => (
+const tab = (props) => (
     <li className={classes.Tab}>
         <a
             href={props.link}
@@ -10,4 +10,4 @@ const Tab = (props) => (
     </li>
 );
 
-export default Tab;
+export default tab;

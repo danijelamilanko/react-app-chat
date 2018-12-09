@@ -1,7 +1,7 @@
 import React from 'react';
 
 import classes from './Toolbar.module.css'
-import Tabs from "../../Tabs/Tabs";
+import Tabs from "../Tabs/Tabs";
 
 const tabs = [
     { title: 'Account' },
