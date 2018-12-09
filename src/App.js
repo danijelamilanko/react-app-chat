@@ -6,7 +6,7 @@ import Chat from './containers/Chat/Chat';
 class App extends Component {
     render() {
         return (
-            <div>
+            <div id="main">
                 <Layout>
                     <Chat/>
                 </Layout>

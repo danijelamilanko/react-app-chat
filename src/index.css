@@ -10,3 +10,13 @@ code {
     font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
     monospace;
 }
+
+body, html {
+    height: 100%;
+    font-size: 14px;
+}
+
+div#root,
+div#main {
+    height: 100%;
+}
