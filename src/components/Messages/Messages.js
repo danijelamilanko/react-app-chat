@@ -1,13 +1,27 @@
-import React from 'react';
+import React, { Component } from 'react';
 
 import classes from './Messages.module.css';
+import Message from "./Message/Message";
 
-const messages = (props) => {
-    return (
-        <div className={classes.Messages}>
+class messages extends Component {
+    componentDidMount () {
+        console.log(this.props.messages);
+    }
 
-        </div>
-    );
-};
+    render() {
+        return (
+            <div className={classes.Messages}>
+                <ul>
+                    {this.props.messages.map(message => (
+                        <Message
+                            key={message.id}
+                            {...message}
+                        />
+                    ))}
+                </ul>
+            </div>
+        );
+    }
+}
 
 export default messages;

@@ -1,10 +1,44 @@
-import React from 'react';
-import ReactDOM from 'react-dom';
-import './index.css';
-import App from './App';
-import * as serviceWorker from './serviceWorker';
+import React from "react";
+import ReactDOM from "react-dom";
+import { BrowserRouter } from "react-router-dom";
+import { Provider } from "react-redux";
+import { createStore, applyMiddleware, combineReducers } from "redux";
+import thunk from "redux-thunk";
+import createSagaMiddleware from "redux-saga";
 
-ReactDOM.render(<App/>, document.getElementById('root'));
+import "./index.css";
+import App from "./App";
+import * as serviceWorker from './serviceWorker';
+import messagesReducer from "./store/reducers/messages";
+import { watchMessages } from "./store/sagas";
+import username from './utils/name';
+import setupSocket from './sockets';
+
+const rootReducer = combineReducers({
+    messages: messagesReducer
+});
+
+const sagaMiddleware = createSagaMiddleware();
+
+const store = createStore(
+    rootReducer,
+    applyMiddleware(thunk, sagaMiddleware)
+);
+
+const socket = setupSocket(store.dispatch, username);
+
+sagaMiddleware.run(watchMessages, {socket, username});
+
+const app = (
+    <Provider store={store}>
+        <BrowserRouter>
+            <App/>
+        </BrowserRouter>
+    </Provider>
+);
+
+ReactDOM.render(app, document.getElementById("root"));
+
 
 // If you want your app to work offline and load faster, you can change
 // unregister() to register() below. Note this comes with some pitfalls.
