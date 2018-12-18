@@ -27,7 +27,7 @@ export function* watchMessages(params) {
     yield takeEvery(actionTypes.INIT_MESSAGES, function* (action) {
         try {
             const response = yield axios.get(
-                "https://react-app-chat.firebaseio.com/messages.json"
+                "https://react-app-chat-58a19.firebaseio.com/messages.json"
             );
             yield put(actions.setMessages(response.data));
         } catch (error) {
