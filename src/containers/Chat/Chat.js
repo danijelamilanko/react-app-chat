@@ -38,7 +38,6 @@ const mapStateToProps = state => {
 const mapDispatchToProps = dispatch => {
     return {
         onMessageSend: (event, message) => {
-            event.preventDefault();
             dispatch(actions.sendMessage('default', message, 'danijela'));
         },
         onInitMessages: () => dispatch(actions.initMessages()),

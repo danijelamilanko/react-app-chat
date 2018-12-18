@@ -35,20 +35,24 @@ class MessageInput extends Component {
         this.setState({messageInputForm: updatedMessageForm});
     };
 
-    onKeyPressHandler = (event) => {
-        if (event.key === 'Enter') {
+    sendMessage = (event) => {
+        event.preventDefault();
+        if (this.state.messageInputForm.message.value !== '') {
             this.props.messageSend(event, this.state.messageInputForm.message.value);
             this.messageInputChanged('');
+        }
+    };
+
+    onKeyPressHandler = (event) => {
+        if (event.key === 'Enter') {
+            this.sendMessage(event);
         }
     };
 
     render() {
         return (
             <form className={classes.MessageInput}
-                  onSubmit={(event) => {
-                      this.props.messageSend(event, this.state.messageInputForm.message.value);
-                      this.messageInputChanged('');
-                  }}>
+                  onSubmit={(event) => {this.sendMessage(event)}}>
                 <Input
                     elementType={this.state.messageInputForm.message.elementType}
                     elementConfig={this.state.messageInputForm.message.elementConfig}

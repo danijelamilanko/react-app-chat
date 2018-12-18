@@ -36,6 +36,7 @@ class App extends Component {
                     <Route path="/chat" component={asyncChat}/>
                     <Route path="/logout" component={Logout}/>
                     <Route path="/auth" component={asyncAuth}/>
+                    <Route path="/" exact component={Home}/>
                     <Redirect to="/"/>
                 </Switch>
             );
