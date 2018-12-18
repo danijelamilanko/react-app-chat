@@ -7,7 +7,7 @@ const initialState = {
 };
 
 const addMessage = (state, action) => {
-    return updateObject( state, {
+    return updateObject(state, {
         messages: state.messages.concat([
             {
                 id: action.id,
@@ -21,22 +21,26 @@ const addMessage = (state, action) => {
 };
 
 const setMessages = (state, action) => {
-    return updateObject( state, {
+    return updateObject(state, {
         messages: state.messages,
         error: false
     });
 };
 
 const fetchMessagesFailed = (state, action) => {
-    return updateObject( state, { error: true } );
+    return updateObject(state, {error: true});
 };
 
 const reducer = (state = initialState, action) => {
     switch (action.type) {
-        case actionTypes.SEND_MESSAGE: return addMessage(state, action);
-        case actionTypes.MESSAGE_RECEIVED: return addMessage(state, action);
-        case actionTypes.SET_MESSAGES: return setMessages(state, action);
-        case actionTypes.FETCH_MESSAGES_FAILED: return fetchMessagesFailed(state, action);
+        case actionTypes.SEND_MESSAGE:
+            return addMessage(state, action);
+        case actionTypes.MESSAGE_RECEIVED:
+            return addMessage(state, action);
+        case actionTypes.SET_MESSAGES:
+            return setMessages(state, action);
+        case actionTypes.FETCH_MESSAGES_FAILED:
+            return fetchMessagesFailed(state, action);
         default:
             return state;
     }

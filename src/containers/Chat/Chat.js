@@ -14,7 +14,7 @@ const tabs = [
 ];
 
 class Chat extends Component {
-    componentDidMount () {
+    componentDidMount() {
         this.props.onInitMessages();
     }
 

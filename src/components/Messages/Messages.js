@@ -4,7 +4,7 @@ import classes from './Messages.module.css';
 import Message from "./Message/Message";
 
 class messages extends Component {
-    componentDidMount () {
+    componentDidMount() {
         console.log(this.props.messages);
     }
 

@@ -42,7 +42,7 @@ class MessageInput extends Component {
         }
     };
 
-    render () {
+    render() {
         return (
             <form className={classes.MessageInput}
                   onSubmit={(event) => {

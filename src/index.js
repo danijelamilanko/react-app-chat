@@ -10,12 +10,14 @@ import "./index.css";
 import App from "./App";
 import * as serviceWorker from './serviceWorker';
 import messagesReducer from "./store/reducers/messages";
-import { watchMessages } from "./store/sagas";
+import authReducer from './store/reducers/auth';
+import { watchMessages, watchAuth } from "./store/sagas";
 import username from './utils/name';
 import setupSocket from './sockets';
 
 const rootReducer = combineReducers({
-    messages: messagesReducer
+    messages: messagesReducer,
+    auth: authReducer
 });
 
 const sagaMiddleware = createSagaMiddleware();
@@ -27,6 +29,7 @@ const store = createStore(
 
 const socket = setupSocket(store.dispatch, username);
 
+sagaMiddleware.run(watchAuth);
 sagaMiddleware.run(watchMessages, {socket, username});
 
 const app = (
