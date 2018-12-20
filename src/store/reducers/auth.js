@@ -2,8 +2,8 @@ import * as actionTypes from '../actions/actionTypes';
 import { updateObject } from '../../shared/utility';
 
 const initialState = {
-    token: null,
-    userId: null,
+    token: localStorage.getItem('token'),
+    userId: localStorage.getItem("userId"),
     error: null,
     loading: false,
     authRedirectPath: '/'
