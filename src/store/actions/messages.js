@@ -2,23 +2,23 @@ import * as actionTypes from './actionTypes';
 
 let nextMessageId = 0;
 
-export const sendMessage = (chatName, message, author) => {
+export const sendMessage = (chatName, message, userName) => {
     return {
         type: actionTypes.SEND_MESSAGE,
         chatName: chatName,
         message: message,
         id: nextMessageId++,
-        author: author
+        userName: userName
     };
 };
 
-export const messageReceived = (chatName, message, author) => {
+export const messageReceived = (chatName, message, userName) => {
     return {
         type: actionTypes.MESSAGE_RECEIVED,
         chatName: chatName,
         message: message,
         id: nextMessageId++,
-        author: author
+        userName: userName
     };
 };
 

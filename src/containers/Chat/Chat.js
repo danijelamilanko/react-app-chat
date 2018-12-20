@@ -23,7 +23,7 @@ class Chat extends Component {
             <div className={classes.Chat}>
                 <Tabs tabs={tabs}/>
                 <Messages messages={this.props.messages}/>
-                <MessageInput messageSend={this.props.onMessageSend}/>
+                <MessageInput userName={this.props.userName} messageSend={this.props.onMessageSend}/>
             </div>
         );
     }
@@ -31,14 +31,15 @@ class Chat extends Component {
 
 const mapStateToProps = state => {
     return {
-        messages: state.messages.messages
+        messages: state.messages.messages,
+        userName: state.auth.userName
     };
 };
 
 const mapDispatchToProps = dispatch => {
     return {
-        onMessageSend: (event, message) => {
-            dispatch(actions.sendMessage('default', message, 'danijela'));
+        onMessageSend: (event, message, userName) => {
+            dispatch(actions.sendMessage('default', message, userName));
         },
         onInitMessages: () => dispatch(actions.initMessages()),
     };

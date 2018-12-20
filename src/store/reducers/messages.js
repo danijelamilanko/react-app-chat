@@ -12,7 +12,7 @@ const addMessage = (state, action) => {
             {
                 id: action.id,
                 message: action.message,
-                author: action.author,
+                userName: action.userName,
                 chatName: action.chatName
             }
         ]),

@@ -21,7 +21,6 @@ export function* watchAuth() {
 
 export function* watchMessages(params) {
     yield takeEvery(actionTypes.SEND_MESSAGE, (action) => {
-        action.author = params.username;
         params.socket.send(JSON.stringify(action));
     });
     yield takeEvery(actionTypes.INIT_MESSAGES, function* (action) {

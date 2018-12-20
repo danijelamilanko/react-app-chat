@@ -4,6 +4,7 @@ import { updateObject } from '../../shared/utility';
 const initialState = {
     token: localStorage.getItem('token'),
     userId: localStorage.getItem("userId"),
+    userName: localStorage.getItem("userName"),
     error: null,
     loading: false,
     authRedirectPath: '/'
@@ -17,6 +18,7 @@ const authSuccess = (state, action) => {
     return updateObject(state, {
         token: action.idToken,
         userId: action.userId,
+        userName: action.userName,
         error: null,
         loading: false
     });
@@ -30,7 +32,7 @@ const authFail = (state, action) => {
 };
 
 const authLogout = (state, action) => {
-    return updateObject(state, {token: null, userId: null});
+    return updateObject(state, {token: null, userId: null, userName: null});
 };
 
 const setAuthRedirectPath = (state, action) => {

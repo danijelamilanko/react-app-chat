@@ -23,7 +23,7 @@ wss.on('connection', (ws) => {
                     type: 'SEND_MESSAGE',
                     chatName: data.chatName,
                     message: data.message,
-                    author: data.author
+                    userName: data.userName
                 }, ws);
                 break;
             default:

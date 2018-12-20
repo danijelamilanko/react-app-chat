@@ -36,8 +36,9 @@ export function* authUserSaga(action) {
         yield localStorage.setItem("token", response.data.idToken);
         yield localStorage.setItem("expirationDate", expirationDate);
         yield localStorage.setItem("userId", response.data.localId);
+        yield localStorage.setItem("userName", response.data.email);
         yield put(
-            actions.authSuccess(response.data.idToken, response.data.localId)
+            actions.authSuccess(response.data.idToken, response.data.localId, response.data.email)
         );
         yield put(actions.checkAuthTimeout(response.data.expiresIn));
     } catch (error) {

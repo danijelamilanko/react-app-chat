@@ -38,7 +38,7 @@ class MessageInput extends Component {
     sendMessage = (event) => {
         event.preventDefault();
         if (this.state.messageInputForm.message.value !== '') {
-            this.props.messageSend(event, this.state.messageInputForm.message.value);
+            this.props.messageSend(event, this.state.messageInputForm.message.value, this.props.userName);
             this.messageInputChanged('');
         }
     };
