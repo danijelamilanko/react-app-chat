@@ -10,8 +10,7 @@ import MessageInput from "../../components/MessageInput/MessageInput";
 import Users from "../../components/Users/Users";
 
 const tabs = [
-    {title: 'Name 1'},
-    {title: 'Name 2'}
+    {title: 'Tab Name'}
 ];
 
 class Chat extends Component {

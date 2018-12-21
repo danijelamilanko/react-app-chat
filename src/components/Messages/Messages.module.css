@@ -1,6 +1,8 @@
 .Messages {
     height: calc(100% - 100px);
     overflow-y: scroll;
+    padding-right: 15px;
+    margin-top: 10px;
 }
 
 .Messages::-webkit-scrollbar {

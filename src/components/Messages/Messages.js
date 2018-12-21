@@ -1,27 +1,34 @@
 import React, { Component } from 'react';
 
 import classes from './Messages.module.css';
-import Message from "./Message/Message";
+import Message from './Message/Message';
 
-class messages extends Component {
+class Messages extends Component {
+    constructor(props) {
+        super(props);
+        this.messagesRef = React.createRef();
+    }
+
     componentDidMount() {
-        console.log(this.props.messages);
+        this.messagesRef.current.scrollTop = this.messagesRef.current.scrollHeight - this.messagesRef.current.clientHeight;
+    }
+
+    componentDidUpdate(prevProps) {
+        this.messagesRef.current.scrollTop = this.messagesRef.current.scrollHeight - this.messagesRef.current.clientHeight;
     }
 
     render() {
         return (
-            <div className={classes.Messages}>
-                <ul>
-                    {this.props.messages.map(message => (
-                        <Message
-                            key={message.id}
-                            {...message}
-                        />
-                    ))}
-                </ul>
+            <div ref={this.messagesRef} className={classes.Messages}>
+                {this.props.messages.map(message => (
+                    <Message
+                        key={message.id}
+                        {...message}
+                    />
+                ))}
             </div>
         );
     }
 }
 
-export default messages;
+export default Messages;
