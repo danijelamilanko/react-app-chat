@@ -6,6 +6,10 @@ export {
     fetchMessagesFailed
 } from './messages';
 export {
+    addUser,
+    setUsers
+} from './users';
+export {
     auth,
     logout,
     setAuthRedirectPath,

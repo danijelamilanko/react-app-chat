@@ -11,6 +11,7 @@ import App from "./App";
 import * as serviceWorker from './serviceWorker';
 import messagesReducer from "./store/reducers/messages";
 import authReducer from './store/reducers/auth';
+import usersReducer from './store/reducers/users';
 import { watchMessages, watchAuth } from "./store/sagas";
 import setupSocket from './sockets';
 
@@ -24,7 +25,8 @@ const composeEnhancers =
 
 const rootReducer = combineReducers({
     messages: messagesReducer,
-    auth: authReducer
+    auth: authReducer,
+    users: usersReducer
 });
 
 const sagaMiddleware = createSagaMiddleware();

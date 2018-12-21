@@ -14,3 +14,6 @@ export const AUTH_INITIATE_LOGOUT = 'AUTH_INITIATE_LOGOUT';
 export const AUTH_LOGOUT = 'AUTH_LOGOUT';
 
 export const SET_AUTH_REDIRECT_PATH = 'SET_AUTH_REDIRECT_PATH';
+
+export const ADD_USER = 'ADD_USER';
+export const USERS_LIST = 'USERS_LIST';

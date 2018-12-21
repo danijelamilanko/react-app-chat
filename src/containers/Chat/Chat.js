@@ -7,6 +7,7 @@ import classes from './Chat.module.css';
 
 import * as actions from "../../store/actions";
 import MessageInput from "../../components/MessageInput/MessageInput";
+import Users from "../../components/Users/Users";
 
 const tabs = [
     {title: 'Name 1'},
@@ -21,9 +22,14 @@ class Chat extends Component {
     render() {
         return (
             <div className={classes.Chat}>
-                <Tabs tabs={tabs}/>
-                <Messages messages={this.props.messages}/>
-                <MessageInput userName={this.props.userName} messageSend={this.props.onMessageSend}/>
+                <div className={classes.ChatMessages}>
+                    <Tabs tabs={tabs}/>
+                    <Messages messages={this.props.messages}/>
+                    <MessageInput userName={this.props.userName} messageSend={this.props.onMessageSend}/>
+                </div>
+                <div className={classes.ChatUsers}>
+                    <Users></Users>
+                </div>
             </div>
         );
     }
