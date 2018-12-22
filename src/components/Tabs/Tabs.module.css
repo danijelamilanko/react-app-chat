@@ -1,8 +1,9 @@
 .Tabs {
     margin: 0;
-    padding: 0;
     list-style: none;
     display: flex;
     align-items: center;
     height: 50px;
+    background: #F5F5F5;
+    padding: 10px 10px 0;
 }
