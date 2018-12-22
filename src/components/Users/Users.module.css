@@ -44,3 +44,7 @@
     white-space:nowrap;
     text-overflow: ellipsis;
 }
+
+.Users > div:hover {
+    background: #F5F5F5;
+}

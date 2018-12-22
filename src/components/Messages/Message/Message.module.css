@@ -40,10 +40,6 @@
 .Item:nth-child(2n) .Text {
     background: #F6F6F6;
 }
-.Item.Item-visible {
-    opacity: 1;
-    filter: alpha(opacity = 100);
-}
 .MessagesImg .Item .Image {
     float: left;
     width: 40px;
@@ -106,4 +102,3 @@
 .MessagesImg .Item.In .Text:hover:before {
     border-left-color: #BBB;
 }
-/* END MESSAGES */

@@ -2,15 +2,15 @@
     margin: 0;
     box-sizing: border-box;
     display: flex;
-    height: 100%;
     align-items: center;
     justify-content: center;
+    width: 100px;
 }
 
 .Tab a {
     text-decoration: none;
-    height: 100%;
-    padding: 16px 10px;
+    padding: 13px 10px;
+    line-height: 20px;
     border-bottom: 4px solid transparent;
     box-sizing: border-box;
     display: block;
