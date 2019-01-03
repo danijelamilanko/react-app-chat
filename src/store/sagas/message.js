@@ -5,7 +5,7 @@ import * as actions from "../actions/index";
 export function* addMessageSaga(action) {
     yield put(actions.addMessageStart());
     try {
-        const response = yield axios.add(`/api/messages/chats/${action.payload.chatId}`, {
+        const response = yield axios.post(`/api/messages/chats/${action.payload.chatId}`, {
             messageBody: action.payload.messageBody
         }, {
             headers: {
