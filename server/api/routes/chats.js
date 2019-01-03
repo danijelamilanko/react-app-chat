@@ -126,6 +126,8 @@ router.delete('/:chatId/members/:memberId', checkAuth, (req, res, next) => {
             message._id = new mongoose.Types.ObjectId();
             message.body = `left #${thisChat.name}`;
             message.chat = req.params.chatId;
+            message.createdAt = new Date();
+            message.createdBy = req.params.memberId;
 
             newMessage = message;
 
