@@ -9,45 +9,132 @@ import * as actions from "../../store/actions";
 import MessageInput from "../../components/MessageInput/MessageInput";
 import Users from "../../components/Users/Users";
 
-const tabs = [
-    {title: 'Tab Name'}
-];
+import SocketContext from '../../socket-context';
 
 class Chat extends Component {
-    componentDidMount() {
-        this.props.onInitMessages();
+
+    count = 0;
+    onExit = () => {
+        this.props.onLeaveChat(this.props.activeChatId, this.props.userId, this.props.socket);
+    };
+
+    componentWillUnmount() {
+        this.onExit();
     }
 
+    componentDidMount() {
+        // Listen joined chat broadcast from the server via socket.io
+        this.props.socket.on('joined-chat-broadcast-from-server', data => {
+            this.props.onReceiveJoinedChatBroadcast(data.chatId, data.userId, this.props.userId)
+        });
+
+        // Listen left chat broadcast from the server via socket.io
+        this.props.socket.on('left-chat-broadcast-from-server', data => {
+            this.props.onReceiveLeftChatBroadcast(data.chatId, data.userId, this.props.userId)
+        });
+
+        // Listen new message added broadcast from the server via socket.io
+        this.props.socket.on('new-message-added-broadcast-from-server', message => {
+            this.props.onReceiveMessageAddedBroadcast(message, this.props.chats, this.props.userId, this.props.activeChatId)
+        });
+
+        this.props.socket.onclose = () => {
+            this.onExit();
+        };
+
+        this.props.onGetChats();
+    }
+
+    componentDidUpdate() {
+        if (this.props.activeChatId && this.count === 0) {
+            this.count++;
+            this.props.onJoinChat(this.props.activeChatId, this.props.userId, this.props.socket);
+            this.props.onGetChatMessages(this.props.activeChatId);
+        }
+    }
+
+    tabSwitchHandler = (chatId) => {
+        this.props.onJoinChat(chatId, this.props.socket);
+    };
+
     render() {
+        let tabs = [];
+        let messages = [];
+        let users = [];
+        if (this.props.chats && this.props.chats.length > 0) {
+            if (!this.props.activeChatId) {
+                this.props.onSetActiveChat(this.props.chats[0]._id);
+            }
+            users = this.props.chats[0].members;
+            console.log('users');
+            console.log(users);
+            tabs = this.props.chats.map(chat => chat.name);
+        }
+        if (Object.keys(this.props.messages).length > 0 && this.props.activeChatId) {
+            messages = this.props.messages[this.props.activeChatId];
+        }
         return (
             <div className={classes.Chat}>
                 <div className={classes.ChatMessages}>
-                    <Tabs tabs={tabs}/>
-                    <Messages messages={this.props.messages}/>
-                    <MessageInput userName={this.props.userName} messageSend={this.props.onMessageSend}/>
+                    <Tabs tabs={tabs} activeChatId={this.props.activeChatId} tabSwitched={this.tabSwitchHandler}/>
+                    <Messages messages={messages}/>
+                    <MessageInput activeChatId={this.props.activeChatId} userName={this.props.userName} messageSend={this.props.onMessageAdd}/>
                 </div>
                 <div className={classes.ChatUsers}>
-                    <Users></Users>
+                    <Users users={users}></Users>
                 </div>
             </div>
         );
     }
 }
 
+const ChatWithSocket = props => (
+    <SocketContext.Consumer>
+        {socket => <Chat {...props} socket={socket} />}
+    </SocketContext.Consumer>
+);
+
 const mapStateToProps = state => {
     return {
-        messages: state.messages.messages,
-        userName: state.auth.userName
+        userName: state.auth.userName,
+        messages: state.message.messages,
+        userId: state.auth.userId,
+        chats: state.chat.chats,
+        activeChatId: state.chat.activeChatId
     };
 };
 
 const mapDispatchToProps = dispatch => {
     return {
-        onMessageSend: (event, message, userName) => {
-            dispatch(actions.sendMessage('default', message, userName));
+        onSetActiveChat: chatId => dispatch(actions.setActiveChat(chatId)),
+        onGetChatMessages: (chatId) => dispatch(actions.getChatMessages(chatId)),
+        onGetChats: () => dispatch(actions.getChats()),
+        onJoinChat: (chatId, userId, socket) => dispatch(actions.joinChat(chatId, userId, socket)),
+        onLeaveChat: (chatId, userId, socket) => dispatch(actions.leaveChat(chatId, userId, socket)),
+        onMessageAdd: (messageBody, chatId, socket) => dispatch(actions.addMessage(messageBody, chatId, socket)),
+        onReceiveMessageAddedBroadcast: (message, chats, currentUserId, activeChatId) => {
+            const chat = chats.find(c => {
+                return c._id === message.chat
+            });
+            if (chat !== undefined) {
+                if (chat.members.indexOf(currentUserId) >= 0) {
+                    if (activeChatId === message.chat) {
+                        dispatch(actions.addMessageSuccess(message))
+                    }
+                }
+            }
         },
-        onInitMessages: () => dispatch(actions.initMessages()),
+        onReceiveJoinedChatBroadcast: (chatId, userId, currentUserId) => {
+            if (currentUserId === userId) {
+                dispatch(actions.joinChatSuccess(chatId, userId));
+            }
+        },
+        onReceiveLeftChatBroadcast: (chatId, userId, currentUserId) => {
+            if (currentUserId === userId) {
+                dispatch(actions.leaveChatSuccess(chatId, userId));
+            }
+        }
     };
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(Chat);
+export default connect(mapStateToProps, mapDispatchToProps)(ChatWithSocket);

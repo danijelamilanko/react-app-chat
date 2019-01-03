@@ -1,55 +1,63 @@
-const WebSocket = require('ws');
+const express = require('express');
+const app = express();
+const bodyParser = require('body-parser');
+const mongoose = require('mongoose');
 
-const wss = new WebSocket.Server({ port: 8989 });
+// Use dotnv module to load environment variables from a .env file into process.env
+require('dotenv').config();
 
-const users = [];
+// Include routes files
+const authRoutes = require('./api/routes/auth');
+const chatsRoutes = require('./api/routes/chats');
+const messagesRoutes = require('./api/routes/messages');
 
-const broadcast = (data, ws) => {
-    wss.clients.forEach((client) => {
-        if (client.readyState === WebSocket.OPEN && client !== ws) {
-            client.send(JSON.stringify(data))
-        }
+// Connect database
+mongoose.connect('mongodb://localhost:27017/react-chat-app')
+    .then(() => {
+        console.log('Database connected');
     })
-};
-
-wss.on('connection', (ws) => {
-    let index;
-    ws.on('message', (message) => {
-        const data = JSON.parse(message);
-        console.log(message);
-        switch (data.type) {
-            case 'ADD_USER': {
-                index = users.length;
-                users.push({ name: data.name, id: index + 1 });
-                console.log(users);
-                ws.send(JSON.stringify({
-                    type: 'USERS_LIST',
-                    users
-                }));
-                broadcast({
-                    type: 'USERS_LIST',
-                    users
-                }, ws);
-                break
-            }
-            case 'SEND_MESSAGE':
-                broadcast({
-                    type: 'SEND_MESSAGE',
-                    chatName: data.chatName,
-                    message: data.message,
-                    userName: data.userName
-                }, ws);
-                break;
-            default:
-                break
-        }
+    .catch(err => {
+        console.log(err);
     });
 
-    ws.on('close', () => {
-        users.splice(index, 1);
-        broadcast({
-            type: 'USERS_LIST',
-            users
-        }, ws)
-    })
+// Configure body parser
+app.use(bodyParser.urlencoded({extended: false}));
+app.use(bodyParser.json());
+
+// Enable CORS
+app.use((req, res, next) => {
+    res.header('Access-Control-Allow-Origin', '*');
+    res.header(
+        'Access-Control-Allow-Headers',
+        'Origin, X-Requested-With, Content-Type, Accept, Authorization'
+    );
+    if (req.method === 'OPTIONS') {
+        res.header('Access-Control-Allow-Methods', 'PUT, POST, PATCH, DELETE, GET');
+        return res.status(200).json({});
+    }
+    next();
 });
+
+// Routes which should handle requests
+app.use('/api/auth', authRoutes);
+app.use('/api/chats', chatsRoutes);
+app.use('/api/messages', messagesRoutes);
+
+// Catch 404 error
+app.use((req, res, next) => {
+    const error = new Error('Not Found');
+    error.status = 404;
+    next(error);
+});
+
+// Handle other error
+app.use((req, res, next) => {
+    res.status(error.status || 500);
+    res.json({
+        error: {
+            message: error.message
+        }
+    });
+});
+
+module.exports = app;

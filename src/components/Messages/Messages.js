@@ -22,7 +22,7 @@ class Messages extends Component {
             <div ref={this.messagesRef} className={classes.Messages}>
                 {this.props.messages.map(message => (
                     <Message
-                        key={message.id}
+                        key={message._id}
                         {...message}
                     />
                 ))}

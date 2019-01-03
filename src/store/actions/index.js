@@ -1,15 +1,4 @@
 export {
-    sendMessage,
-    messageReceived,
-    initMessages,
-    setMessages,
-    fetchMessagesFailed
-} from './messages';
-export {
-    addUser,
-    setUsers
-} from './users';
-export {
     auth,
     logout,
     setAuthRedirectPath,
@@ -20,3 +9,23 @@ export {
     authFail,
     checkAuthTimeout
 } from './auth';
+export {
+    getChats,
+    getChatsStart,
+    getChatsSuccess,
+    joinChat,
+    joinChatStart,
+    joinChatSuccess,
+    leaveChat,
+    setActiveChat,
+    leaveChatStart,
+    leaveChatSuccess
+} from './chat'
+export {
+    addMessage,
+    addMessageStart,
+    addMessageSuccess,
+    getChatMessages,
+    getChatMessagesStart,
+    getChatMessagesSuccess
+} from './message'

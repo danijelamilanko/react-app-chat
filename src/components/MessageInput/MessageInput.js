@@ -4,6 +4,8 @@ import classes from './MessageInput.module.css';
 import Input from "../../components/UI/Input/Input";
 import Button from "../../components/UI/Button/Button";
 
+import SocketContext from '../../socket-context';
+
 class MessageInput extends Component {
     state = {
         messageInputForm: {
@@ -38,7 +40,7 @@ class MessageInput extends Component {
     sendMessage = (event) => {
         event.preventDefault();
         if (this.state.messageInputForm.message.value !== '') {
-            this.props.messageSend(event, this.state.messageInputForm.message.value, this.props.userName);
+            this.props.messageSend(this.state.messageInputForm.message.value, this.props.activeChatId, this.props.socket);
             this.messageInputChanged('');
         }
     };
@@ -68,4 +70,10 @@ class MessageInput extends Component {
     };
 };
 
-export default MessageInput;
+const MessageInputWithSocket = (props) => (
+    <SocketContext.Consumer>
+        {socket => <MessageInput {...props} socket={socket} />}
+    </SocketContext.Consumer>
+);
+
+export default MessageInputWithSocket;

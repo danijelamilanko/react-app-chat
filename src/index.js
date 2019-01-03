@@ -9,11 +9,10 @@ import createSagaMiddleware from "redux-saga";
 import "./index.css";
 import App from "./App";
 import * as serviceWorker from './serviceWorker';
-import messagesReducer from "./store/reducers/messages";
 import authReducer from './store/reducers/auth';
-import usersReducer from './store/reducers/users';
-import { watchMessages, watchAuth } from "./store/sagas";
-import setupSocket from './sockets';
+import chatReducer from './store/reducers/chat';
+import messageReducer from './store/reducers/message';
+import { watchAuth, watchMessage, watchChat } from "./store/sagas";
 
 
 const composeEnhancers =
@@ -24,9 +23,9 @@ const composeEnhancers =
         }) : compose;
 
 const rootReducer = combineReducers({
-    messages: messagesReducer,
     auth: authReducer,
-    users: usersReducer
+    chat: chatReducer,
+    message: messageReducer
 });
 
 const sagaMiddleware = createSagaMiddleware();
@@ -36,10 +35,9 @@ const store = createStore(
     composeEnhancers(applyMiddleware(thunk, sagaMiddleware))
 );
 
-const socket = setupSocket(store.dispatch);
-
 sagaMiddleware.run(watchAuth);
-sagaMiddleware.run(watchMessages, {socket});
+sagaMiddleware.run(watchChat);
+sagaMiddleware.run(watchMessage);
 
 const app = (
     <Provider store={store}>

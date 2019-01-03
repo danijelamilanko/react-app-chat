@@ -8,41 +8,46 @@ export function* logoutSaga(action) {
     yield call([localStorage, "removeItem"], "token");
     yield call([localStorage, "removeItem"], "expirationDate");
     yield call([localStorage, "removeItem"], "userId");
+    yield call([localStorage, "removeItem"], "email");
+    yield call([localStorage, "removeItem"], "firstName");
+    yield call([localStorage, "removeItem"], "lastName");
     yield put(actions.logoutSucceed());
 }
 
 export function* checkAuthTimeoutSaga(action) {
-    yield delay(action.expirationTime * 1000);
+    yield delay(action.payload.expirationTime * 1000);
     yield put(actions.logout());
 }
 
 export function* authUserSaga(action) {
     yield put(actions.authStart());
-    const authData = {
-        email: action.email,
-        password: action.password,
-        returnSecureToken: true
+    let url = '/api/auth/signin';
+    let params = {
+        email: action.payload.email,
+        password: action.payload.password
     };
-    let url = 'https://www.googleapis.com/identitytoolkit/v3/relyingparty/signupNewUser?key=AIzaSyAT4IX9daR1ZK6AOy9DrUyarwpCTwSeDuQ';
-    if (!action.isSignup) {
-        url = 'https://www.googleapis.com/identitytoolkit/v3/relyingparty/verifyPassword?key=AIzaSyAT4IX9daR1ZK6AOy9DrUyarwpCTwSeDuQ';
+    if (action.payload.firstName) {
+        url = '/api/auth/signup';
+        params['firstName'] = action.payload.firstName;
+        params['lastName'] = action.payload.lastName;
     }
     try {
-        const response = yield axios.post(url, authData);
-
+        const response = yield axios.post(url, params);
         const expirationDate = yield new Date(
-            new Date().getTime() + response.data.expiresIn * 1000
+            new Date().getTime() + 3599 * 1000
         );
-        yield localStorage.setItem("token", response.data.idToken);
+        yield localStorage.setItem("token", response.data.data.token);
         yield localStorage.setItem("expirationDate", expirationDate);
-        yield localStorage.setItem("userId", response.data.localId);
-        yield localStorage.setItem("userName", response.data.email);
+        yield localStorage.setItem("userId", response.data.data.user._id);
+        yield localStorage.setItem("email", response.data.data.user.email);
+        yield localStorage.setItem("firstName", response.data.data.user.firstName);
+        yield localStorage.setItem("lastName", response.data.data.user.lastName);
         yield put(
-            actions.authSuccess(response.data.idToken, response.data.localId, response.data.email)
+            actions.authSuccess(response.data.data.token, response.data.data.user._id, response.data.data.user.email, response.data.data.user.firstName, response.data.data.user.lastName, response.data.data.user.role)
         );
-        yield put(actions.checkAuthTimeout(response.data.expiresIn));
+        yield put(actions.checkAuthTimeout(3599));
     } catch (error) {
-        yield put(actions.authFail(error.response.data.error));
+        yield put(actions.authFail(error.response.data.data.error));
     }
 }
 
@@ -58,7 +63,11 @@ export function* authCheckStateSaga(action) {
             yield put(actions.logout());
         } else {
             const userId = yield localStorage.getItem("userId");
-            yield put(actions.authSuccess(token, userId));
+            const email = yield localStorage.getItem("email");
+            const firstName = yield localStorage.getItem("firstName");
+            const lastName = yield localStorage.getItem("lastName");
+            const role = yield localStorage.getItem("role");
+            yield put(actions.authSuccess(token, userId, email, firstName, lastName, role));
             yield put(
                 actions.checkAuthTimeout(
                     (expirationDate.getTime() - new Date().getTime()) / 1000

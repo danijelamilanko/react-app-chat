@@ -4,7 +4,9 @@ import { updateObject } from '../../shared/utility';
 const initialState = {
     token: localStorage.getItem('token'),
     userId: localStorage.getItem("userId"),
-    userName: localStorage.getItem("userName"),
+    email: localStorage.getItem("email"),
+    firstName: localStorage.getItem("firstName"),
+    lastName: localStorage.getItem("lastName"),
     error: null,
     loading: false,
     authRedirectPath: '/'
@@ -16,9 +18,11 @@ const authStart = (state, action) => {
 
 const authSuccess = (state, action) => {
     return updateObject(state, {
-        token: action.idToken,
-        userId: action.userId,
-        userName: action.userName,
+        token: action.payload.token,
+        userId: action.payload.userId,
+        email: action.payload.email,
+        firstName: action.payload.firstName,
+        lastName: action.payload.lastName,
         error: null,
         loading: false
     });
@@ -26,17 +30,17 @@ const authSuccess = (state, action) => {
 
 const authFail = (state, action) => {
     return updateObject(state, {
-        error: action.error,
+        error: action.payload.error,
         loading: false
     });
 };
 
 const authLogout = (state, action) => {
-    return updateObject(state, {token: null, userId: null, userName: null});
+    return updateObject(state, {token: null, userId: null, email: null, firstName: null, lastName: null});
 };
 
 const setAuthRedirectPath = (state, action) => {
-    return updateObject(state, {authRedirectPath: action.path})
+    return updateObject(state, {authRedirectPath: action.payload.path})
 };
 
 const reducer = (state = initialState, action) => {

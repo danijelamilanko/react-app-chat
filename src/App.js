@@ -8,12 +8,21 @@ import Home from './containers/Home/Home';
 import Logout from './containers/Auth/Logout/Logout';
 import * as actions from './store/actions/index';
 
+import SocketContext from './socket-context';
+import * as io from 'socket.io-client';
+
 const asyncChat = asyncComponent(() => {
     return import('./containers/Chat/Chat');
 });
 
 const asyncAuth = asyncComponent(() => {
     return import('./containers/Auth/Auth');
+});
+
+const socket = io(process.env.API_BASE_URL, {
+    secure: true,
+    rejectUnauthorized: false,
+    path: 'chat/socket.io'
 });
 
 class App extends Component {
@@ -43,11 +52,13 @@ class App extends Component {
         }
 
         return (
-            <div id="main">
-                <Layout>
-                    {routes}
-                </Layout>
-            </div>
+            <SocketContext.Provider value={socket}>
+                <div id="main">
+                    <Layout>
+                        {routes}
+                    </Layout>
+                </div>
+            </SocketContext.Provider>
         );
     }
 }

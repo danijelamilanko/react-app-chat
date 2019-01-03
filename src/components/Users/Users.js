@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import { connect } from 'react-redux';
 
 import classes from './Users.module.css';
 import userImg from '../../assets/images/users/user.jpg';
@@ -9,9 +8,9 @@ class Users extends Component {
         return (
             <div className={classes.Users}>
                 {this.props.users.map(user => (
-                    <div key={user.id}>
+                    <div key={user._id}>
                         <img src={userImg} alt="Dmitry Ivaniuk"/>
-                        <span>{user.name}</span>
+                        <span>{user.firstName}</span>
                     </div>
                 ))}
             </div>
@@ -19,10 +18,4 @@ class Users extends Component {
     }
 }
 
-const mapStateToProps = state => {
-    return {
-        users: state.users.users
-    };
-};
-
-export default connect(mapStateToProps, null)(Users);
+export default Users;

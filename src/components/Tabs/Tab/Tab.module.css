@@ -14,12 +14,18 @@
     border-bottom: 4px solid transparent;
     box-sizing: border-box;
     display: block;
+
+    background-color: grey;
+    color: white;
+    overflow:hidden;
+    white-space:nowrap;
+    text-overflow: ellipsis;
 }
 
 .Tab a:hover,
 .Tab a:active,
 .Tab a.active {
-    background-color: grey;
+    background-color: darkgrey;
     border-bottom: 4px solid black;
     color: white;
 }

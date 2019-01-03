@@ -23,7 +23,7 @@ const message = (props) => {
                         <a href={props.link}>{props.userName}</a>
                         <span className={classes.Date}>08:33</span>
                     </div>
-                    {props.message}
+                    {props.body}
                 </div>
             </div>
         </div>

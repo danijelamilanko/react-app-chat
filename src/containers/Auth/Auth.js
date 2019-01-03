@@ -12,6 +12,32 @@ import { updateObject, checkValidity } from '../../shared/utility';
 class Auth extends Component {
     state = {
         controls: {
+            firstName: {
+                elementType: 'input',
+                elementConfig: {
+                    type: 'text',
+                    placeholder: 'First Name'
+                },
+                value: '',
+                validation: {
+                    required: true
+                },
+                valid: false,
+                touched: false
+            },
+            lastName: {
+                elementType: 'input',
+                elementConfig: {
+                    type: 'text',
+                    placeholder: 'Last Name'
+                },
+                value: '',
+                validation: {
+                    required: true
+                },
+                valid: false,
+                touched: false
+            },
             email: {
                 elementType: 'input',
                 elementConfig: {
@@ -45,7 +71,7 @@ class Auth extends Component {
     };
 
     componentDidMount() {
-        if (!this.props.messages && this.props.authRedirectPath !== '/') {
+        if (!this.props.chats && this.props.authRedirectPath !== '/') {
             this.props.onSetAuthRedirectPath();
         }
     }
@@ -63,7 +89,28 @@ class Auth extends Component {
 
     submitHandler = (event) => {
         event.preventDefault();
-        this.props.onAuth(this.state.controls.email.value, this.state.controls.password.value, this.state.isSignup);
+        let validAll = true;
+        const newControls = {};
+        for (let key in this.state.controls) {
+            if (this.state.isSignup || (key === 'email' || key === 'password')) {
+                const fieldValid = checkValidity(this.state.controls[key].value, this.state.controls[key].validation);
+                if (!fieldValid) {
+                    validAll = false;
+                }
+                newControls[key] = updateObject(this.state.controls[key], {
+                    valid: fieldValid,
+                    touched: true
+                });
+            }
+        }
+        const updatedControls = updateObject(this.state.controls, newControls);
+        this.setState({controls: updatedControls});
+        if (validAll) {
+            this.props.onAuth(this.state.controls.email.value,
+                this.state.controls.password.value,
+                this.state.isSignup ? this.state.controls.firstName.value : null,
+                this.state.isSignup ? this.state.controls.lastName.value : null);
+        }
     };
 
     switchAuthModeHandler = () => {
@@ -75,10 +122,12 @@ class Auth extends Component {
     render() {
         const formElementsArray = [];
         for (let key in this.state.controls) {
-            formElementsArray.push({
-                id: key,
-                config: this.state.controls[key]
-            });
+            if (this.state.isSignup || (key === 'email' || key === 'password')) {
+                formElementsArray.push({
+                    id: key,
+                    config: this.state.controls[key]
+                });
+            }
         }
 
         let form = formElementsArray.map(formElement => (
@@ -114,7 +163,7 @@ class Auth extends Component {
             <div className={classes.Auth}>
                 {authRedirect}
                 {errorMessage}
-                <form onSubmit={this.submitHandler}>
+                <form onSubmit={(event) => this.submitHandler(event)}>
                     {form}
                     <Button btnType="Success">SUBMIT</Button>
                 </form>
@@ -131,14 +180,14 @@ const mapStateToProps = state => {
         loading: state.auth.loading,
         error: state.auth.error,
         isAuthenticated: state.auth.token !== null,
-        messages: state.messages.messages,
+        chats: state.chat.chats,
         authRedirectPath: state.auth.authRedirectPath
     };
 };
 
 const mapDispatchToProps = dispatch => {
     return {
-        onAuth: (email, password, isSignup) => dispatch(actions.auth(email, password, isSignup)),
+        onAuth: (email, password, firstName, lastName) => dispatch(actions.auth(email, password, firstName, lastName)),
         onSetAuthRedirectPath: () => dispatch(actions.setAuthRedirectPath('/'))
     };
 };

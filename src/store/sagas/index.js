@@ -1,4 +1,4 @@
-import { takeEvery, put, all } from "redux-saga/effects";
+import { takeEvery, all } from "redux-saga/effects";
 
 import * as actionTypes from "../actions/actionTypes";
 import {
@@ -7,8 +7,15 @@ import {
     authUserSaga,
     authCheckStateSaga
 } from "./auth";
-import * as actions from "../actions";
-import axios from "../../axios-messages";
+import {
+    getChetsSaga,
+    joinChatSaga,
+    leaveChatSaga
+} from "./chat";
+import {
+    addMessageSaga,
+    getChatMessagesSaga
+} from "./message";
 
 export function* watchAuth() {
     yield all([
@@ -19,18 +26,14 @@ export function* watchAuth() {
     ]);
 }
 
-export function* watchMessages(params) {
-    yield takeEvery(actionTypes.SEND_MESSAGE, (action) => {
-        params.socket.send(JSON.stringify(action));
-    });
-    yield takeEvery(actionTypes.INIT_MESSAGES, function* (action) {
-        try {
-            const response = yield axios.get(
-                "https://react-app-chat-58a19.firebaseio.com/messages.json"
-            );
-            yield put(actions.setMessages(response.data));
-        } catch (error) {
-            yield put(actions.fetchMessagesFailed());
-        }
-    });
+export function* watchChat() {
+    yield takeEvery(actionTypes.GET_CHATS, getChetsSaga);
+    yield takeEvery(actionTypes.JOIN_CHAT, joinChatSaga);
+    yield takeEvery(actionTypes.LEAVE_CHAT, leaveChatSaga);
+}
+
+
+export function* watchMessage() {
+    yield takeEvery(actionTypes.ADD_MESSAGE, addMessageSaga);
+    yield takeEvery(actionTypes.GET_CHAT_MESSAGES, getChatMessagesSaga);
 }
