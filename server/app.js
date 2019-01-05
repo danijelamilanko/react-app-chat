@@ -12,7 +12,7 @@ const chatsRoutes = require('./api/routes/chats');
 const messagesRoutes = require('./api/routes/messages');
 
 // Connect database
-mongoose.connect('mongodb://localhost:27017/react-chat-app')
+mongoose.connect(process.env.DATABASE)
     .then(() => {
         console.log('Database connected');
     })
