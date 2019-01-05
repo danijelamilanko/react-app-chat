@@ -19,7 +19,7 @@ const asyncAuth = asyncComponent(() => {
 const socket = io(process.env.API_BASE_URL, {
     secure: true,
     rejectUnauthorized: false,
-    path: 'chat/socket.io'
+    path: '/chat/socket.io'
 });
 
 class App extends Component {
