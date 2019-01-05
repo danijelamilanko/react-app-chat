@@ -26,10 +26,6 @@ io.on('connection', (socket) => {
     socket.on('new-message-added', message => {
         socket.broadcast.emit('new-message-added-broadcast-from-server', message);
     });
-
-    socket.on('message-deleted', messageId => {
-        socket.broadcast.emit('message-deleted-broadcast-from-server', messageId);
-    });
 });
 
 server.listen(port, function () {
