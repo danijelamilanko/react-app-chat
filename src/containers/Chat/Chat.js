@@ -13,17 +13,13 @@ import SocketContext from '../../socket-context';
 
 class Chat extends Component {
 
-    count = 0;
+    setChat = false;
     onExit = () => {
         this.props.onLeaveChat(this.props.activeChatId, this.props.userId, this.props.socket);
     };
 
     componentWillUnmount() {
         this.onExit();
-    }
-
-    componentWillMount() {
-        this.props.onGetChats();
     }
 
     componentDidMount() {
@@ -45,11 +41,20 @@ class Chat extends Component {
         this.props.socket.onclose = () => {
             this.onExit();
         };
+        this.props.onGetChats();
+    }
+
+    componentWillUpdate(nextProps, nextState) {
+        if (nextProps.chats && nextProps.chats.length > 0) {
+            if (!nextProps.activeChatId) {
+                nextProps.onSetActiveChat(nextProps.chats[0]._id);
+            }
+        }
     }
 
     componentDidUpdate() {
-        if (this.props.activeChatId && this.count === 0) {
-            this.count++;
+        if (this.props.activeChatId && !this.setChat) {
+            this.setChat = true;
             this.props.onJoinChat(this.props.activeChatId, this.props.userId, this.props.socket);
             this.props.onGetChatMessages(this.props.activeChatId);
         }
@@ -64,13 +69,10 @@ class Chat extends Component {
         let messages = [];
         let users = [];
         if (this.props.chats && this.props.chats.length > 0) {
-            if (!this.props.activeChatId) {
-                this.props.onSetActiveChat(this.props.chats[0]._id);
+            if (this.props.activeChatId) {
+                users = this.props.chats[0].members;
+                tabs = this.props.chats.map(chat => chat.name);
             }
-            users = this.props.chats[0].members;
-            console.log('users');
-            console.log(users);
-            tabs = this.props.chats.map(chat => chat.name);
         }
         if (Object.keys(this.props.messages).length > 0 && this.props.activeChatId) {
             messages = this.props.messages[this.props.activeChatId];
