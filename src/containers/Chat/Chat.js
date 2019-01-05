@@ -22,6 +22,10 @@ class Chat extends Component {
         this.onExit();
     }
 
+    componentWillMount() {
+        this.props.onGetChats();
+    }
+
     componentDidMount() {
         // Listen joined chat broadcast from the server via socket.io
         this.props.socket.on('joined-chat-broadcast-from-server', data => {
@@ -41,8 +45,6 @@ class Chat extends Component {
         this.props.socket.onclose = () => {
             this.onExit();
         };
-
-        this.props.onGetChats();
     }
 
     componentDidUpdate() {

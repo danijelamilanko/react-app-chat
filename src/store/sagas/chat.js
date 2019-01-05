@@ -44,13 +44,13 @@ export function* joinChatSaga(action) {
 export function* leaveChatSaga(action) {
     yield put(actions.leaveChatStart());
     try {
-        const response = yield axios.delete(`/api/chats/${action.payload.chatId}/members/${action.payload.userId}`, {
+        yield axios.delete(`/api/chats/${action.payload.chatId}/members/${action.payload.userId}`, {
             headers: {
                 Authorization: `Bearer ${localStorage.getItem('token')}`
             }
         });
         yield put(
-            actions.leaveChatSuccess(response.data.chats)
+            actions.leaveChatSuccess(action.payload.chatId, action.payload.userId)
         );
         // Tell the server that a new message was added via socket.io
         action.payload.socket.emit('left-chat', { chatId: action.payload.chatId, userId: action.payload.userId});

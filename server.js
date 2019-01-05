@@ -1,7 +1,7 @@
 const http = require('http');
 const app = require('./server/app');
 
-const port = process.env.PORT || 3001;
+const port = process.env.PORT || 3002;
 const server = http.createServer(app);
 
 const io = require('socket.io')(server, {
@@ -15,12 +15,12 @@ io.on('connection', (socket) => {
         console.log('user disconnected');
     });
 
-    socket.on('joined-channel', data => {
-        socket.broadcast.emit('joined-channel-broadcast-from-server', data);
+    socket.on('joined-chat', data => {
+        socket.broadcast.emit('joined-chat-broadcast-from-server', data);
     });
 
-    socket.on('left-channel', data => {
-        socket.broadcast.emit('left-channel-broadcast-from-server', data);
+    socket.on('left-chat', data => {
+        socket.broadcast.emit('left-chat-broadcast-from-server', data);
     });
 
     socket.on('new-message-added', message => {

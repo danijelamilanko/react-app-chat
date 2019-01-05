@@ -5,15 +5,12 @@ import asyncComponent from './hoc/asyncComponent/asyncComponent';
 
 import Layout from './hoc/Layout/Layout';
 import Home from './containers/Home/Home';
+import Chat from './containers/Chat/Chat';
 import Logout from './containers/Auth/Logout/Logout';
 import * as actions from './store/actions/index';
 
 import SocketContext from './socket-context';
 import * as io from 'socket.io-client';
-
-const asyncChat = asyncComponent(() => {
-    return import('./containers/Chat/Chat');
-});
 
 const asyncAuth = asyncComponent(() => {
     return import('./containers/Auth/Auth');
@@ -42,7 +39,7 @@ class App extends Component {
         if (this.props.isAuthenticated) {
             routes = (
                 <Switch>
-                    <Route path="/chat" component={asyncChat}/>
+                    <Route path="/chat" component={Chat}/>
                     <Route path="/logout" component={Logout}/>
                     <Route path="/auth" component={asyncAuth}/>
                     <Route path="/" exact component={Home}/>
