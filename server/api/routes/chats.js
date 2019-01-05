@@ -46,9 +46,7 @@ router.post('/:chatId/members', checkAuth, (req, res, next) => {
     Chat.findById(req.params.chatId).exec()
         .then(chat => {
             thisChat = chat;
-            if (chat.members.filter(function(member) {
-                return member == req.body.newMemberUserId
-            }).length > 0) {
+            if (chat.members.filter(member => member == req.body.newMemberUserId).length > 0) {
                 alreadyExists = true;
             } else {
                 chat.members.push(req.body.newMemberUserId);
