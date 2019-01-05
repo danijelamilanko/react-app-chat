@@ -4,9 +4,9 @@ This project was bootstrapped with [Create React App](https://github.com/faceboo
 
 In the project directory run:
 
-### `cd server && node app.js`
+### `node server.js`
 
-Launches WebSocket server.
+Launches server.
 
 ### `npm start`
 
