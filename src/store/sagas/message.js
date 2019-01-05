@@ -16,7 +16,7 @@ export function* addMessageSaga(action) {
             actions.addMessageSuccess(response.data.data.message)
         );
         // Tell the server that a new message was added via socket.io
-        action.socket.emit('new-message-added', response.data.message);
+        action.payload.socket.emit('new-message-added', response.data.data.message);
     } catch (error) {
     }
 }
