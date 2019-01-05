@@ -27,16 +27,18 @@ export function* joinChatSaga(action) {
                 Authorization: `Bearer ${localStorage.getItem('token')}`
             }
         });
-        yield put(
-            actions.joinChatSuccess(action.payload.chatId, response.data.data.user)
-        );
-        yield put(
-            actions.addMessageSuccess(response.data.data.newMessage)
-        );
-        // Tell the server that a new message was added via socket.io
-        action.payload.socket.emit('joined-chat', { chatId: action.payload.chatId, userId: action.payload.userId});
-        // Tell the server that a new message was added via socket.io
-        action.payload.socket.emit('new-message-added', response.data.data.newMessage)
+        if (!response.data.data.alreadyExists) {
+            yield put(
+                actions.joinChatSuccess(action.payload.chatId, response.data.data.user)
+            );
+            yield put(
+                actions.addMessageSuccess(response.data.data.newMessage)
+            );
+            // Tell the server that a new message was added via socket.io
+            action.payload.socket.emit('joined-chat', { chatId: action.payload.chatId, userId: action.payload.userId});
+            // Tell the server that a new message was added via socket.io
+            action.payload.socket.emit('new-message-added', response.data.data.newMessage)
+        }
     } catch (error) {
     }
 }

@@ -41,38 +41,45 @@ router.post('/:chatId/members', checkAuth, (req, res, next) => {
     let thisChat = null;
     let newMessage = null;
     let memberUser = null;
+    let alreadyExists = false;
 
     Chat.findById(req.params.chatId).exec()
         .then(chat => {
-            // TODO: check if user has already been a member of thie chat
             thisChat = chat;
-
-            chat.members.push(req.body.newMemberUserId);
-            return chat.save();
+            if (chat.members.filter(function(member) {
+                return member == req.body.newMemberUserId
+            }).length > 0) {
+                alreadyExists = true;
+            } else {
+                chat.members.push(req.body.newMemberUserId);
+                return chat.save();
+            }
         })
         .then(result => {
-            return User.findById(req.body.newMemberUserId).exec();
+            if (!alreadyExists) {
+                return User.findById(req.body.newMemberUserId).exec();
+            }
         })
         .then(user => {
-            memberUser = user;
+            if (!alreadyExists) {
+                memberUser = user;
 
-            const message = new Message();
-            message._id = new mongoose.Types.ObjectId();
-            message.body = `joined #${thisChat.name}`;
-            message.chat = req.params.chatId;
-            message.createdAt = new Date();
-            message.createdBy = req.body.newMemberUserId;
+                const message = new Message();
+                message._id = new mongoose.Types.ObjectId();
+                message.body = `joined #${thisChat.name}`;
+                message.chat = req.params.chatId;
+                message.createdAt = new Date();
+                message.createdBy = req.body.newMemberUserId;
 
-            newMessage = message;
+                newMessage = message;
 
-            return message.save();
+                return message.save();
+            }
         })
         .then(result => {
-            return res.status(200).json({
-                status: 'success',
-                code: '200',
-                data: {
-                    newMessage: {
+            const data = {'alreadyExists': alreadyExists};
+            if (!alreadyExists) {
+                data['newMessage'] = {
                         _id: newMessage._id,
                         body: newMessage.body,
                         createdAt: newMessage.createdAt,
@@ -84,9 +91,13 @@ router.post('/:chatId/members', checkAuth, (req, res, next) => {
                             email: memberUser.email,
                             role: memberUser.role
                         }
-                    },
-                    user: memberUser
-                }
+                    };
+                data['user'] = memberUser;
+            }
+            return res.status(200).json({
+                status: 'success',
+                code: '200',
+                data: data
             });
         })
         .catch(err => {
