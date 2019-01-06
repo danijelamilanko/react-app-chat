@@ -23,23 +23,24 @@ class Chat extends Component {
     }
 
     componentDidMount() {
+        const that = this;
         // Listen joined chat broadcast from the server via socket.io
         this.props.socket.on('joined-chat-broadcast-from-server', data => {
-            this.props.onReceiveJoinedChatBroadcast(data.chatId, data.userId, this.props.userId)
+            that.props.onReceiveJoinedChatBroadcast(data.chatId, data.userId, that.props.userId)
         });
 
         // Listen left chat broadcast from the server via socket.io
         this.props.socket.on('left-chat-broadcast-from-server', data => {
-            this.props.onReceiveLeftChatBroadcast(data.chatId, data.userId, this.props.userId)
+            that.props.onReceiveLeftChatBroadcast(data.chatId, data.userId, that.props.userId)
         });
 
         // Listen new message added broadcast from the server via socket.io
         this.props.socket.on('new-message-added-broadcast-from-server', message => {
-            this.props.onReceiveMessageAddedBroadcast(message, this.props.chats, this.props.userId, this.props.activeChatId)
+            that.props.onReceiveMessageAddedBroadcast(message, that.props.chats, that.props.userId, that.props.activeChatId)
         });
 
         this.props.socket.onclose = () => {
-            this.onExit();
+            that.onExit();
         };
         this.props.onGetChats();
     }
@@ -121,7 +122,9 @@ const mapDispatchToProps = dispatch => {
                 return c._id === message.chat
             });
             if (chat !== undefined) {
-                if (chat.members.indexOf(currentUserId) >= 0) {
+                if (chat.members.some(member => {
+                    return member._id === currentUserId;
+                })) {
                     if (activeChatId === message.chat) {
                         dispatch(actions.addMessageSuccess(message))
                     }
