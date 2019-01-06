@@ -10,13 +10,17 @@ const io = require('socket.io')(server, {
 
 io.on('connection', (socket) => {
     console.log('user connected');
+    var userId;
 
     socket.on('disconnect', () => {
         console.log('user disconnected');
+        console.log(userId);
+        socket.broadcast.emit('disconnected-broadcast-from-server', userId);
     });
 
     socket.on('joined-chat', data => {
         console.log('joined-chat');
+        userId = data.user._id;
         socket.broadcast.emit('joined-chat-broadcast-from-server', data);
     });
 

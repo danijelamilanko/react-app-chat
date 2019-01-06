@@ -32,8 +32,11 @@ class Chat extends Component {
             that.props.onReceiveMessageAddedBroadcast(message, that.props.chats, that.props.userId, that.props.activeChatId)
         });
 
-        this.props.socket.onclose = () => {
-        };
+        // Listen disconnected broadcast from the server via socket.io
+        this.props.socket.on('disconnected-broadcast-from-server', userId => {
+            that.props.onReceiveDisconnectedBroadcast(userId)
+        });
+
         this.props.onGetChats();
     }
 
@@ -141,6 +144,9 @@ const mapDispatchToProps = dispatch => {
             if (currentUserId !== userId) {
                 dispatch(actions.leaveChatSuccess(chatId, userId));
             }
+        },
+        onReceiveDisconnectedBroadcast: (userId) => {
+            dispatch(actions.leaveChatSuccess(null, userId));
         }
     };
 };
