@@ -1,15 +1,23 @@
-import React from 'react';
+import React, { Component } from 'react';
 
 import classes from './Tab.module.css';
 
-const tab = (props) => {
-    return (
-        <li className={classes.Tab}>
-            <a
-                href={props.link}
-                className={props.active ? classes.active : null}>{props.children}</a>
-        </li>
-    );
+class Tab extends Component {
+
+    tabClick = (event, tabId) => {
+        event.preventDefault();
+        this.props.tabClicked(tabId);
+    };
+
+    render() {
+        return (
+            <li className={classes.Tab}>
+                <a onClick={(event) => {this.tabClick(event, this.props.tabId)}}
+                   href={this.props.link}
+                   className={this.props.active ? classes.active : null}>{this.props.children}</a>
+            </li>
+        );
+    }
 };
 
-export default tab;
+export default Tab;

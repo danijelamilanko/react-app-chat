@@ -1,19 +1,27 @@
-import React from 'react';
+import React, { Component } from 'react';
 
 import classes from './Tabs.module.css';
 import Tab from './Tab/Tab';
 
-const tabs = (props) => {
-    return (
-        <ul className={classes.Tabs}>
-            {props.tabs.map((tab, index) => (
-                <Tab link="/"
-                     key={tab}
-                     active={props.activeChat === index}
-                     onClick={props.tabSwitched}>{tab}</Tab>
-            ))}
-        </ul>
-    );
+class Tabs extends Component {
+
+    tabClicked = (tabId) => {
+        this.props.tabClicked(tabId);
+    };
+
+    render() {
+        return (
+            <ul className={classes.Tabs}>
+                {this.props.tabs.map(tab => (
+                    <Tab link="/"
+                         tabId={tab._id}
+                         key={tab._id}
+                         active={this.props.activeChatId === tab._id}
+                         tabClicked={this.tabClicked}>{tab.name}</Tab>
+                ))}
+            </ul>
+        );
+    };
 };
 
-export default tabs;
+export default Tabs;

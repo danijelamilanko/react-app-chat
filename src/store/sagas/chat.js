@@ -35,7 +35,7 @@ export function* joinChatSaga(action) {
                 actions.addMessageSuccess(response.data.data.newMessage)
             );
             // Tell the server that a new message was added via socket.io
-            action.payload.socket.emit('joined-chat', { chatId: action.payload.chatId, userId: action.payload.userId});
+            action.payload.socket.emit('joined-chat', { chatId: action.payload.chatId, user: response.data.data.user});
             // Tell the server that a new message was added via socket.io
             action.payload.socket.emit('new-message-added', response.data.data.newMessage)
         }

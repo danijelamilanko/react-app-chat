@@ -9,7 +9,7 @@ class Users extends Component {
             <div className={classes.Users}>
                 {this.props.users.map(user => (
                     <div key={user._id}>
-                        <img src={userImg} alt="Dmitry Ivaniuk"/>
+                        <img src={userImg} alt=""/>
                         <span>{user.firstName}</span>
                     </div>
                 ))}

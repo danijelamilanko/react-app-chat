@@ -14,24 +14,17 @@ import SocketContext from '../../socket-context';
 class Chat extends Component {
 
     setChat = false;
-    onExit = () => {
-        this.props.onLeaveChat(this.props.activeChatId, this.props.userId, this.props.socket);
-    };
-
-    componentWillUnmount() {
-        this.onExit();
-    }
 
     componentDidMount() {
         const that = this;
         // Listen joined chat broadcast from the server via socket.io
         this.props.socket.on('joined-chat-broadcast-from-server', data => {
-            that.props.onReceiveJoinedChatBroadcast(data.chatId, data.userId, that.props.userId)
+            that.props.onReceiveJoinedChatBroadcast(data.chatId, data.user, that.props.userId)
         });
 
         // Listen left chat broadcast from the server via socket.io
         this.props.socket.on('left-chat-broadcast-from-server', data => {
-            that.props.onReceiveLeftChatBroadcast(data.chatId, data.userId, that.props.userId)
+            that.props.onReceiveLeftChatBroadcast(data.chatId, that.props.activeChatId, data.userId, that.props.userId)
         });
 
         // Listen new message added broadcast from the server via socket.io
@@ -40,7 +33,6 @@ class Chat extends Component {
         });
 
         this.props.socket.onclose = () => {
-            that.onExit();
         };
         this.props.onGetChats();
     }
@@ -61,8 +53,9 @@ class Chat extends Component {
         }
     }
 
-    tabSwitchHandler = (chatId) => {
-        this.props.onJoinChat(chatId, this.props.socket);
+    tabClickedHandler = (chatId) => {
+        this.props.onLeaveChat(this.props.activeChatId, this.props.userId, this.props.socket);
+        this.props.onJoinChat(chatId, this.props.userId, this.props.socket);
     };
 
     render() {
@@ -72,7 +65,11 @@ class Chat extends Component {
         if (this.props.chats && this.props.chats.length > 0) {
             if (this.props.activeChatId) {
                 users = this.props.chats[0].members;
-                tabs = this.props.chats.map(chat => chat.name);
+                tabs = this.props.chats.map(chat => {
+                    let newChat = Object.assign({}, chat);
+                    delete newChat['members'];
+                    return newChat;
+                });
             }
         }
         if (Object.keys(this.props.messages).length > 0 && this.props.activeChatId) {
@@ -81,9 +78,9 @@ class Chat extends Component {
         return (
             <div className={classes.Chat}>
                 <div className={classes.ChatMessages}>
-                    <Tabs tabs={tabs} activeChatId={this.props.activeChatId} tabSwitched={this.tabSwitchHandler}/>
+                    <Tabs tabs={tabs} activeChatId={this.props.activeChatId} tabClicked={this.tabClickedHandler.bind(this)}/>
                     <Messages messages={messages}/>
-                    <MessageInput activeChatId={this.props.activeChatId} userName={this.props.userName} messageSend={this.props.onMessageAdd}/>
+                    <MessageInput activeChatId={this.props.activeChatId} userName={this.props.userName} messageSend={this.props.messageAddHandler}/>
                 </div>
                 <div className={classes.ChatUsers}>
                     <Users users={users}></Users>
@@ -116,7 +113,7 @@ const mapDispatchToProps = dispatch => {
         onGetChats: () => dispatch(actions.getChats()),
         onJoinChat: (chatId, userId, socket) => dispatch(actions.joinChat(chatId, userId, socket)),
         onLeaveChat: (chatId, userId, socket) => dispatch(actions.leaveChat(chatId, userId, socket)),
-        onMessageAdd: (messageBody, chatId, socket) => dispatch(actions.addMessage(messageBody, chatId, socket)),
+        messageAddHandler: (messageBody, chatId, socket) => dispatch(actions.addMessage(messageBody, chatId, socket)),
         onReceiveMessageAddedBroadcast: (message, chats, currentUserId, activeChatId) => {
             const chat = chats.find(c => {
                 return c._id === message.chat
@@ -131,14 +128,16 @@ const mapDispatchToProps = dispatch => {
                 }
             }
         },
-        onReceiveJoinedChatBroadcast: (chatId, userId, currentUserId) => {
-            if (currentUserId === userId) {
-                dispatch(actions.joinChatSuccess(chatId, userId));
+        onReceiveJoinedChatBroadcast: (chatId, user, currentUserId) => {
+            if (currentUserId !== user._id) {
+                dispatch(actions.joinChatSuccess(chatId, user));
             }
         },
-        onReceiveLeftChatBroadcast: (chatId, userId, currentUserId) => {
-            if (currentUserId === userId) {
-                dispatch(actions.leaveChatSuccess(chatId, userId));
+        onReceiveLeftChatBroadcast: (chatId, activeChatId, userId, currentUserId) => {
+            if (currentUserId !== userId) {
+                if (activeChatId === chatId) {
+                    dispatch(actions.leaveChatSuccess(chatId, userId));
+                }
             }
         }
     };
