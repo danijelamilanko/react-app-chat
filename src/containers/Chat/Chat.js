@@ -56,6 +56,8 @@ class Chat extends Component {
     tabClickedHandler = (chatId) => {
         this.props.onLeaveChat(this.props.activeChatId, this.props.userId, this.props.socket);
         this.props.onJoinChat(chatId, this.props.userId, this.props.socket);
+        this.props.onSetActiveChat(chatId);
+        this.props.onGetChatMessages(chatId);
     };
 
     render() {
@@ -64,7 +66,7 @@ class Chat extends Component {
         let users = [];
         if (this.props.chats && this.props.chats.length > 0) {
             if (this.props.activeChatId) {
-                users = this.props.chats[0].members;
+                users = this.props.chats.filter(chat => chat._id === this.props.activeChatId)[0].members;
                 tabs = this.props.chats.map(chat => {
                     let newChat = Object.assign({}, chat);
                     delete newChat['members'];
@@ -73,7 +75,9 @@ class Chat extends Component {
             }
         }
         if (Object.keys(this.props.messages).length > 0 && this.props.activeChatId) {
-            messages = this.props.messages[this.props.activeChatId];
+            if (this.props.messages.hasOwnProperty(this.props.activeChatId)) {
+                messages = this.props.messages[this.props.activeChatId];
+            }
         }
         return (
             <div className={classes.Chat}>
@@ -135,9 +139,7 @@ const mapDispatchToProps = dispatch => {
         },
         onReceiveLeftChatBroadcast: (chatId, activeChatId, userId, currentUserId) => {
             if (currentUserId !== userId) {
-                if (activeChatId === chatId) {
-                    dispatch(actions.leaveChatSuccess(chatId, userId));
-                }
+                dispatch(actions.leaveChatSuccess(chatId, userId));
             }
         }
     };

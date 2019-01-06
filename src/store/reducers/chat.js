@@ -26,18 +26,8 @@ const reducer = (state = initialState, action) => {
             }
         }
         case actionTypes.SET_ACTIVE_CHAT: {
-            let clonedChats = null;
-            if (state.chats !== null) {
-                clonedChats = state.chats.map(chat => {
-                    return {
-                        ...chat,
-                        members: [...chat.members]
-                    }
-                })
-            }
-
             return {
-                chats: clonedChats,
+                ...state,
                 activeChatId: action.payload.chatId
             }
         }
@@ -45,7 +35,7 @@ const reducer = (state = initialState, action) => {
             const clonedChats = state.chats.map(chat => {
                 return {
                     ...chat,
-                    members: chat._id !== action.payload.chatId ? [...chat.members, action.payload.userId] : chat.members.filter(member => {
+                    members: chat._id !== action.payload.chatId ? [...chat.members] : chat.members.filter(member => {
                         return member._id !== action.payload.userId
                     })
                 };
