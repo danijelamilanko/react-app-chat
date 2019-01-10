@@ -15,26 +15,30 @@ class Chat extends Component {
 
     setChat = false;
 
+    componentWillUnmount() {
+        this.props.onLeaveChat(0, this.props.userId, this.props.socket);
+    }
+
     componentDidMount() {
         const that = this;
         // Listen joined chat broadcast from the server via socket.io
         this.props.socket.on('joined-chat-broadcast-from-server', data => {
-            that.props.onReceiveJoinedChatBroadcast(data.chatId, data.user, that.props.userId)
+            that.props.onReceiveJoinedChatBroadcast(data.chatId, data.user, that.props.userId);
         });
 
         // Listen left chat broadcast from the server via socket.io
         this.props.socket.on('left-chat-broadcast-from-server', data => {
-            that.props.onReceiveLeftChatBroadcast(data.chatId, that.props.activeChatId, data.userId, that.props.userId)
+            that.props.onReceiveLeftChatBroadcast(data.chatId, that.props.activeChatId, data.userId, that.props.userId);
         });
 
         // Listen new message added broadcast from the server via socket.io
         this.props.socket.on('new-message-added-broadcast-from-server', message => {
-            that.props.onReceiveMessageAddedBroadcast(message, that.props.chats, that.props.userId, that.props.activeChatId)
+            that.props.onReceiveMessageAddedBroadcast(message, that.props.chats, that.props.userId, that.props.activeChatId);
         });
 
         // Listen disconnected broadcast from the server via socket.io
         this.props.socket.on('disconnected-broadcast-from-server', userId => {
-            that.props.onReceiveDisconnectedBroadcast(userId)
+            that.props.onReceiveDisconnectedBroadcast(userId);
         });
 
         this.props.onGetChats();
@@ -57,7 +61,6 @@ class Chat extends Component {
     }
 
     tabClickedHandler = (chatId) => {
-        this.props.onLeaveChat(this.props.activeChatId, this.props.userId, this.props.socket);
         this.props.onJoinChat(chatId, this.props.userId, this.props.socket);
         this.props.onSetActiveChat(chatId);
         this.props.onGetChatMessages(chatId);
@@ -146,7 +149,7 @@ const mapDispatchToProps = dispatch => {
             }
         },
         onReceiveDisconnectedBroadcast: (userId) => {
-            dispatch(actions.leaveChatSuccess(null, userId));
+            dispatch(actions.leaveChatSuccess(0, userId));
         }
     };
 };

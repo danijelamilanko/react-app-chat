@@ -108,60 +108,103 @@ router.post('/:chatId/members', checkAuth, (req, res, next) => {
 });
 
 router.delete('/:chatId/members/:memberId', checkAuth, (req, res, next) => {
-    let thisChat = null;
-    let newMessage = null;
-    let memberUser = null;
+    if (req.params.chatId !== '0') {
+        let thisChat = null;
+        Chat.findById(req.params.chatId).exec()
+            .then(chat => {
+                // TODO: check if the user is not a member of this chat
 
-    Chat.findById(req.params.chatId).exec()
-        .then(chat => {
-            // TODO: check if the user is not a member of this chat
+                thisChat = chat;
 
-            thisChat = chat;
+                const updatedChatMembers = chat.members.filter(member => {
+                    return member.toString() !== req.params.memberId;
+                });
 
-            const updatedChatMembers = chat.members.filter(member => {
-                return member.toString() !== req.params.memberId;
+                chat.members = updatedChatMembers;
+                return chat.save();
+            })
+            .then(result => {
+                const message = new Message();
+                message._id = new mongoose.Types.ObjectId();
+                message.body = `left #${thisChat.name}`;
+                message.chat = req.params.chatId;
+                message.createdAt = new Date();
+                message.createdBy = req.params.memberId;
+
+                return message.save();
+            })
+            .then(result => {
+                return res.status(200).json({
+                    status: 'success',
+                    code: '200',
+                    data: {}
+                });
+            })
+            .catch(err => {
+                return res.status(500).json({
+                    status: 'error',
+                    code: '500',
+                    message: 'Something is wrong. Please try again later.'
+                });
             });
-
-            chat.members = updatedChatMembers;
-            return chat.save();
-        })
-        .then(result => {
-            return User.findById(req.params.memberId).exec();
-        })
-        .then(user => {
-            memberUser = user;
-
-            const message = new Message();
-            message._id = new mongoose.Types.ObjectId();
-            message.body = `left #${thisChat.name}`;
-            message.chat = req.params.chatId;
-            message.createdAt = new Date();
-            message.createdBy = req.params.memberId;
-
-            newMessage = message;
-
-            return newMessage.save();
-        })
-        .then(result => {
-            return res.status(200).json({
-                status: 'success',
-                code: '200',
-                data: {
-                    newMessage: {
-                        _id: newMessage._id,
-                        body: newMessage.body,
-                        chat: newMessage.chat
+    } else {
+        let allChatsWithUser = [];
+        Chat.find().exec()
+            .then(chats => {
+                allChats = chats;
+                var count = 0;
+                allChats.forEach(function(chat) {
+                    const updatedChatMembers = chat.members.filter(member => {
+                        return member.toString() !== req.params.memberId;
+                    });
+                    if (chat.members.length !== updatedChatMembers.length) {
+                        allChatsWithUser.push(chat);
                     }
-                }
+                    chat.members = updatedChatMembers;
+                    chat.save(function(err) {
+                        count++;
+                        if (count === chats.length) {
+                            return;
+                        }
+                    });
+                });
+            })
+            .then(result => {
+                return User.findById(req.params.memberId).exec();
+            })
+            .then(user => {
+                memberUser = user;
+                var count = 0;
+                allChatsWithUser.forEach(function(chat) {
+                    const message = new Message();
+                    message._id = new mongoose.Types.ObjectId();
+                    message.body = `left #${chat.name}`;
+                    message.chat = chat._id;
+                    message.createdAt = new Date();
+                    message.createdBy = req.params.memberId;
+                    message.save(function(err) {
+                        count++;
+                        if (count === allChatsWithUser.length) {
+                            return;
+                        }
+                    });
+                });
+            })
+            .then(result => {
+                return res.status(200).json({
+                    status: 'success',
+                    code: '200',
+                    data: {}
+                });
+            })
+            .catch(err => {
+                return res.status(500).json({
+                    status: 'error',
+                    code: '500',
+                    message: 'Something is wrong. Please try again later.'
+                });
             });
-        })
-        .catch(err => {
-            return res.status(500).json({
-                status: 'error',
-                code: '500',
-                message: 'Something is wrong. Please try again later.'
-            });
-        });
+    }
 });
 
 module.exports = router;

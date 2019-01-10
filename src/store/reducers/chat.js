@@ -35,7 +35,7 @@ const reducer = (state = initialState, action) => {
             const clonedChats = state.chats.map(chat => {
                 return {
                     ...chat,
-                    members: action.payload.chatId && chat._id !== action.payload.chatId  ? [...chat.members] : chat.members.filter(member => {
+                    members: action.payload.chatId !== 0 && chat._id !== action.payload.chatId  ? [...chat.members] : chat.members.filter(member => {
                         return member._id !== action.payload.userId
                     })
                 };
