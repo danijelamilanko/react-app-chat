@@ -14,15 +14,15 @@ const reducer = (state = initialState, action) => {
             }
         }
         case actionTypes.JOIN_CHAT_SUCCESS: {
-            const clonedChats = state.chats.map(chat => {
+            const joinedChats = state.chats.map(chat => {
                 return {
                     ...chat,
-                    members: chat._id === action.payload.chatId ? [...chat.members, action.payload.user] : [...chat.members]
+                    members: !action.payload.alreadyExists && chat._id === action.payload.chatId ? [...chat.members, action.payload.user] : [...chat.members]
                 }
             });
             return {
                 ...state,
-                chats: clonedChats
+                chats: joinedChats
             }
         }
         case actionTypes.SET_ACTIVE_CHAT: {
@@ -32,17 +32,17 @@ const reducer = (state = initialState, action) => {
             }
         }
         case actionTypes.LEAVE_CHAT_SUCCESS: {
-            const clonedChats = state.chats.map(chat => {
+            const leavedChats = state.chats.map(chat => {
                 return {
                     ...chat,
-                    members: action.payload.chatId !== 0 && chat._id !== action.payload.chatId  ? [...chat.members] : chat.members.filter(member => {
+                    members: action.payload.chatId !== 0 && chat._id !== action.payload.chatId ? [...chat.members] : chat.members.filter(member => {
                         return member._id !== action.payload.userId
                     })
                 };
             });
             return {
                 ...state,
-                chats: clonedChats
+                chats: leavedChats
             }
         }
         default:

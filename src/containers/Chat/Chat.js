@@ -23,7 +23,7 @@ class Chat extends Component {
         const that = this;
         // Listen joined chat broadcast from the server via socket.io
         this.props.socket.on('joined-chat-broadcast-from-server', data => {
-            that.props.onReceiveJoinedChatBroadcast(data.chatId, data.user, that.props.userId);
+            that.props.onReceiveJoinedChatBroadcast(data.chatId, data.user, false, that.props.userId);
         });
 
         // Listen left chat broadcast from the server via socket.io
@@ -44,24 +44,18 @@ class Chat extends Component {
         this.props.onGetChats();
     }
 
-    componentWillUpdate(nextProps, nextState) {
-        if (nextProps.chats && nextProps.chats.length > 0) {
-            if (!nextProps.activeChatId) {
-                nextProps.onSetActiveChat(nextProps.chats[0]._id);
-            }
-        }
-    }
-
     componentDidUpdate() {
-        if (this.props.activeChatId && !this.setChat) {
+        if (this.props.chats && !this.setChat) {
             this.setChat = true;
-            this.props.onJoinChat(this.props.activeChatId, this.props.userId, this.props.socket);
-            this.props.onGetChatMessages(this.props.activeChatId);
+            for (let i = 0; i < this.props.chats.length; i++) {
+                this.props.onJoinChat(this.props.chats[i]._id, this.props.userId, this.props.socket);
+            }
+            this.props.onSetActiveChat(this.props.chats[0]._id);
+            this.props.onGetChatMessages(this.props.chats[0]._id);
         }
     }
 
     tabClickedHandler = (chatId) => {
-        this.props.onJoinChat(chatId, this.props.userId, this.props.socket);
         this.props.onSetActiveChat(chatId);
         this.props.onGetChatMessages(chatId);
     };
@@ -140,7 +134,7 @@ const mapDispatchToProps = dispatch => {
         },
         onReceiveJoinedChatBroadcast: (chatId, user, currentUserId) => {
             if (currentUserId !== user._id) {
-                dispatch(actions.joinChatSuccess(chatId, user));
+                dispatch(actions.joinChatSuccess(chatId, user, false));
             }
         },
         onReceiveLeftChatBroadcast: (chatId, activeChatId, userId, currentUserId) => {
