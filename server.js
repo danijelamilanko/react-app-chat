@@ -23,6 +23,12 @@ io.on('connection', (socket) => {
         socket.broadcast.emit('joined-chat-broadcast-from-server', data);
     });
 
+    socket.on('joined-chat-already', data => {
+        console.log('joined-chat-already');
+        userId = data.user._id;
+        socket.broadcast.emit('joined-chat-broadcast-from-server', data);
+    });
+
     socket.on('left-chat', data => {
         console.log('left-chat');
         socket.broadcast.emit('left-chat-broadcast-from-server', data);

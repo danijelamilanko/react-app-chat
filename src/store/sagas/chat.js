@@ -33,6 +33,9 @@ export function* joinChatSaga(action) {
             );
             // Tell the server that a user joined the chat via socket.io
             action.payload.socket.emit('joined-chat', { chatId: action.payload.chatId, user: response.data.data.user});
+        } else {
+            // Tell the server that a user already joined the chat via socket.io
+            action.payload.socket.emit('joined-chat-already', { chatId: action.payload.chatId, user: response.data.data.user});
         }
     } catch (error) {
     }
