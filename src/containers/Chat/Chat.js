@@ -66,6 +66,7 @@ class Chat extends Component {
 
     tabClosedHandler = (chatId) => {
         this.props.onLeaveChat(chatId, this.props.userId, this.props.socket);
+        this.props.onDeleteChat(chatId);
         if (chatId === this.props.activeChatId) {
             let newChatId = this.props.chats[0]._id;
             if (this.props.chats[0]._id === chatId) {
@@ -76,14 +77,13 @@ class Chat extends Component {
     };
 
     render() {
-        let tabs = [];
         let messages = [];
         let users = [];
+        let tabs = [];
         if (this.props.chats && this.props.chats.length > 0) {
             if (this.props.activeChatId) {
                 users = this.props.chats.filter(chat => chat._id === this.props.activeChatId)[0].members;
-                tabs = this.props.chats.filter(chat => chat.members.some(member => member._id === this.props.userId));
-                tabs = tabs.map(chat => {
+                tabs = this.props.chats.map(chat => {
                     let newChat = Object.assign({}, chat);
                     delete newChat['members'];
                     return newChat;
@@ -136,6 +136,7 @@ const mapDispatchToProps = dispatch => {
         onGetChats: () => dispatch(actions.getChats()),
         onJoinChat: (chatId, userId, socket) => dispatch(actions.joinChat(chatId, userId, socket)),
         onLeaveChat: (chatId, userId, socket) => dispatch(actions.leaveChat(chatId, userId, socket)),
+        onDeleteChat: (chatId, userId, socket) => dispatch(actions.deleteChat(chatId)),
         messageAddHandler: (messageBody, chatId, socket) => dispatch(actions.addMessage(messageBody, chatId, socket)),
         onReceiveMessageAddedBroadcast: (message, chats, currentUserId, activeChatId) => {
             const chat = chats.find(c => {

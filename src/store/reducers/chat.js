@@ -45,6 +45,13 @@ const reducer = (state = initialState, action) => {
                 chats: leavedChats
             }
         }
+        case actionTypes.DELETE_CHAT: {
+            const deletedChats = state.chats.filter(chat => chat._id !== action.payload.chatId);
+            return {
+                ...state,
+                chats: deletedChats
+            }
+        }
         default:
             return state
     }

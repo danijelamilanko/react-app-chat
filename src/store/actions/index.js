@@ -17,6 +17,7 @@ export {
     joinChatStart,
     joinChatSuccess,
     leaveChat,
+    deleteChat,
     setActiveChat,
     leaveChatStart,
     leaveChatSuccess

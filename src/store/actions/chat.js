@@ -92,3 +92,14 @@ export const leaveChatSuccess = (chatId, userId) => {
         }
     }
 };
+
+// deleteChat
+
+export const deleteChat = (chatId) => {
+    return {
+        type: actionTypes.DELETE_CHAT,
+        payload: {
+            chatId: chatId
+        }
+    };
+};

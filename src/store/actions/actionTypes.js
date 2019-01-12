@@ -19,6 +19,8 @@ export const LEAVE_CHAT = 'LEAVE_CHAT';
 export const LEAVE_CHAT_START = 'LEAVE_CHAT_START';
 export const LEAVE_CHAT_SUCCESS = 'LEAVE_CHAT_SUCCESS';
 
+export const DELETE_CHAT = 'DELETE_CHAT';
+
 export const SET_ACTIVE_CHAT = 'SET_ACTIVE_CHAT';
 
 export const GET_CHAT_MESSAGES = 'GET_CHAT_MESSAGES';
