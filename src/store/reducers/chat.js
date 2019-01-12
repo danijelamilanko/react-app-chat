@@ -17,7 +17,7 @@ const reducer = (state = initialState, action) => {
             const joinedChats = state.chats.map(chat => {
                 return {
                     ...chat,
-                    members: !action.payload.alreadyExists && chat._id === action.payload.chatId ? [...chat.members, action.payload.user] : [...chat.members]
+                    members: chat._id === action.payload.chatId ? [...chat.members, action.payload.user] : [...chat.members]
                 }
             });
             return {

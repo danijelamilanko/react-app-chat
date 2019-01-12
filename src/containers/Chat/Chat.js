@@ -17,18 +17,22 @@ class Chat extends Component {
 
     componentWillUnmount() {
         this.props.onLeaveChat(0, this.props.userId, this.props.socket);
+        this.props.socket.off('joined-chat-broadcast-from-server');
+        this.props.socket.off('left-chat-broadcast-from-server');
+        this.props.socket.off('new-message-added-broadcast-from-server');
+        this.props.socket.off('disconnected-broadcast-from-server');
     }
 
     componentDidMount() {
         const that = this;
         // Listen joined chat broadcast from the server via socket.io
         this.props.socket.on('joined-chat-broadcast-from-server', data => {
-            that.props.onReceiveJoinedChatBroadcast(data.chatId, data.user, false, that.props.userId);
+            that.props.onReceiveJoinedChatBroadcast(data.chatId, data.user, that.props.userId);
         });
 
         // Listen left chat broadcast from the server via socket.io
         this.props.socket.on('left-chat-broadcast-from-server', data => {
-            that.props.onReceiveLeftChatBroadcast(data.chatId, that.props.activeChatId, data.userId, that.props.userId);
+            that.props.onReceiveLeftChatBroadcast(data.chatId, data.userId, that.props.userId);
         });
 
         // Listen new message added broadcast from the server via socket.io
@@ -134,16 +138,18 @@ const mapDispatchToProps = dispatch => {
         },
         onReceiveJoinedChatBroadcast: (chatId, user, currentUserId) => {
             if (currentUserId !== user._id) {
-                dispatch(actions.joinChatSuccess(chatId, user, false));
+                dispatch(actions.joinChatSuccess(chatId, user));
             }
         },
-        onReceiveLeftChatBroadcast: (chatId, activeChatId, userId, currentUserId) => {
+        onReceiveLeftChatBroadcast: (chatId, userId, currentUserId) => {
             if (currentUserId !== userId) {
                 dispatch(actions.leaveChatSuccess(chatId, userId));
             }
         },
         onReceiveDisconnectedBroadcast: (userId) => {
-            dispatch(actions.leaveChatSuccess(0, userId));
+            if (userId) {
+                dispatch(actions.leaveChatSuccess(0, userId));
+            }
         }
     };
 };

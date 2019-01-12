@@ -80,10 +80,7 @@ router.delete('/:chatId/members/:memberId', checkAuth, (req, res, next) => {
         let thisChat = null;
         Chat.findById(req.params.chatId).exec()
             .then(chat => {
-                // TODO: check if the user is not a member of this chat
-
                 thisChat = chat;
-
                 const updatedChatMembers = chat.members.filter(member => {
                     return member.toString() !== req.params.memberId;
                 });

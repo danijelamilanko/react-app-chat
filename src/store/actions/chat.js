@@ -54,13 +54,12 @@ export const joinChatStart = () => {
     }
 };
 
-export const joinChatSuccess = (chatId, user, alreadyExists) => {
+export const joinChatSuccess = (chatId, user) => {
     return {
         type: actionTypes.JOIN_CHAT_SUCCESS,
         payload: {
             chatId: chatId,
-            user: user,
-            alreadyExists: alreadyExists
+            user: user
         }
     }
 };
