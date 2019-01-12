@@ -9,6 +9,10 @@ class Tabs extends Component {
         this.props.tabClicked(tabId);
     };
 
+    tabClosed = (tabId) => {
+        this.props.tabClosed(tabId);
+    };
+
     render() {
         return (
             <ul className={classes.Tabs}>
@@ -17,11 +21,13 @@ class Tabs extends Component {
                          tabId={tab._id}
                          key={tab._id}
                          active={this.props.activeChatId === tab._id}
-                         tabClicked={this.tabClicked}>{tab.name}</Tab>
+                         isLast={this.props.tabs.length === 1}
+                         tabClicked={this.tabClicked}
+                         tabClosed={this.tabClosed}>{tab.name}</Tab>
                 ))}
             </ul>
         );
     };
-};
+}
 
 export default Tabs;

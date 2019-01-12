@@ -64,6 +64,17 @@ class Chat extends Component {
         this.props.onGetChatMessages(chatId);
     };
 
+    tabClosedHandler = (chatId) => {
+        this.props.onLeaveChat(chatId, this.props.userId, this.props.socket);
+        if (chatId === this.props.activeChatId) {
+            let newChatId = this.props.chats[0]._id;
+            if (this.props.chats[0]._id === chatId) {
+                newChatId = this.props.chats[1]._id;
+            }
+            this.tabClickedHandler(newChatId);
+        }
+    };
+
     render() {
         let tabs = [];
         let messages = [];
@@ -71,7 +82,8 @@ class Chat extends Component {
         if (this.props.chats && this.props.chats.length > 0) {
             if (this.props.activeChatId) {
                 users = this.props.chats.filter(chat => chat._id === this.props.activeChatId)[0].members;
-                tabs = this.props.chats.map(chat => {
+                tabs = this.props.chats.filter(chat => chat.members.some(member => member._id === this.props.userId));
+                tabs = tabs.map(chat => {
                     let newChat = Object.assign({}, chat);
                     delete newChat['members'];
                     return newChat;
@@ -86,7 +98,10 @@ class Chat extends Component {
         return (
             <div className={classes.Chat}>
                 <div className={classes.ChatMessages}>
-                    <Tabs tabs={tabs} activeChatId={this.props.activeChatId} tabClicked={this.tabClickedHandler.bind(this)}/>
+                    <Tabs tabs={tabs}
+                          activeChatId={this.props.activeChatId}
+                          tabClicked={this.tabClickedHandler.bind(this)}
+                          tabClosed={this.tabClosedHandler.bind(this)}/>
                     <Messages messages={messages}/>
                     <MessageInput activeChatId={this.props.activeChatId} userName={this.props.userName} messageSend={this.props.messageAddHandler}/>
                 </div>

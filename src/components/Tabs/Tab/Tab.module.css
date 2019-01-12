@@ -4,7 +4,8 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 100px;
+    position: relative;
+    margin-right: 5px;
 }
 
 .Tab a {
@@ -14,12 +15,22 @@
     border-bottom: 4px solid transparent;
     box-sizing: border-box;
     display: block;
+    padding-right: 30px;
 
     background-color: grey;
     color: white;
     overflow:hidden;
     white-space:nowrap;
     text-overflow: ellipsis;
+}
+
+.Tab span {
+    position: absolute;
+    top: 15px;
+    right: 10px;
+    cursor: pointer;
+    color: white;
+    font-size: 12px;
 }
 
 .Tab a:hover,
