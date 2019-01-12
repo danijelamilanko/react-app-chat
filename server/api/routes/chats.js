@@ -39,10 +39,8 @@ router.get('/', checkAuth, (req, res, next) => {
 
 router.post('/:chatId/members', checkAuth, (req, res, next) => {
     let thisChat = null;
-    let newMessage = null;
     let memberUser = null;
     let alreadyExists = false;
-
     Chat.findById(req.params.chatId).exec()
         .then(chat => {
             thisChat = chat;
@@ -58,34 +56,9 @@ router.post('/:chatId/members', checkAuth, (req, res, next) => {
         })
         .then(user => {
             memberUser = user;
-            const message = new Message();
-            message._id = new mongoose.Types.ObjectId();
-            message.body = `joined #${thisChat.name}`;
-            message.chat = req.params.chatId;
-            message.createdAt = new Date();
-            message.createdBy = req.body.newMemberUserId;
-
-            newMessage = message;
-
-            return message.save();
-        })
-        .then(result => {
             const data = {
                 'alreadyExists': alreadyExists,
-                'user': memberUser,
-                'newMessage': {
-                    _id: newMessage._id,
-                    body: newMessage.body,
-                    createdAt: newMessage.createdAt,
-                    chat: newMessage.chat,
-                    createdBy: {
-                        _id: memberUser._id,
-                        firstName: memberUser.firstName,
-                        lastName: memberUser.lastName,
-                        email: memberUser.email,
-                        role: memberUser.role
-                    }
-                }
+                'user': memberUser
             };
             return res.status(200).json({
                 status: 'success',
@@ -104,9 +77,7 @@ router.post('/:chatId/members', checkAuth, (req, res, next) => {
 
 router.delete('/:chatId/members/:memberId', checkAuth, (req, res, next) => {
     if (req.params.chatId !== '0') {
-        let newMessages = [];
         let thisChat = null;
-        let memberUser = null;
         Chat.findById(req.params.chatId).exec()
             .then(chat => {
                 // TODO: check if the user is not a member of this chat
@@ -121,37 +92,6 @@ router.delete('/:chatId/members/:memberId', checkAuth, (req, res, next) => {
                 return chat.save();
             })
             .then(result => {
-                const message = new Message();
-                message._id = new mongoose.Types.ObjectId();
-                message.body = `left #${thisChat.name}`;
-                message.chat = req.params.chatId;
-                message.createdAt = new Date();
-                message.createdBy = req.params.memberId;
-
-                newMessages.push(message);
-
-                return message.save();
-            })
-            .then(result => {
-                return User.findById(req.params.memberId).exec();
-            })
-            .then(user => {
-                memberUser = user;
-                const data = {
-                    'newMessage': {
-                        _id: newMessage._id,
-                        body: newMessage.body,
-                        createdAt: newMessage.createdAt,
-                        chat: newMessage.chat,
-                        createdBy: {
-                            _id: memberUser._id,
-                            firstName: memberUser.firstName,
-                            lastName: memberUser.lastName,
-                            email: memberUser.email,
-                            role: memberUser.role
-                        }
-                    }
-                };
                 return res.status(200).json({
                     status: 'success',
                     code: '200',
@@ -167,7 +107,6 @@ router.delete('/:chatId/members/:memberId', checkAuth, (req, res, next) => {
             });
     } else {
         let allChatsWithUser = [];
-        let newMessages = [];
         let memberUser = null;
         Chat.find().exec()
             .then(chats => {
@@ -190,41 +129,10 @@ router.delete('/:chatId/members/:memberId', checkAuth, (req, res, next) => {
                 });
             })
             .then(result => {
-                return User.findById(req.params.memberId).exec();
-            })
-            .then(user => {
-                memberUser = user;
-                var count = 0;
-                allChatsWithUser.forEach(function(chat) {
-                    const message = new Message();
-                    message._id = new mongoose.Types.ObjectId();
-                    message.body = `left #${chat.name}`;
-                    message.chat = chat._id;
-                    message.createdAt = new Date();
-                    message.createdBy = req.params.memberId;
-                    newMessages.push(message);
-                    message.save(function(err) {
-                        count++;
-                        if (count === allChatsWithUser.length) {
-                            return;
-                        }
-                    });
-                });
-            })
-            .then(result => {
-                newMessages.forEach(function(newMessage) {
-                    newMessage['createdBy'] = {
-                        _id: memberUser._id,
-                        firstName: memberUser.firstName,
-                        lastName: memberUser.lastName,
-                        email: memberUser.email,
-                        role: memberUser.role
-                    }
-                });
                 return res.status(200).json({
                     status: 'success',
                     code: '200',
-                    data: {'newMessages': newMessages}
+                    data: {}
                 });
             })
             .catch(err => {

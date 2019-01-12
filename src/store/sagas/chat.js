@@ -30,13 +30,8 @@ export function* joinChatSaga(action) {
         yield put(
             actions.joinChatSuccess(action.payload.chatId, response.data.data.user, response.data.data.alreadyExists)
         );
-        yield put(
-            actions.addMessageSuccess(response.data.data.newMessage)
-        );
-        // Tell the server that a new message was added via socket.io
+        // Tell the server that a user joined the chat via socket.io
         action.payload.socket.emit('joined-chat', { chatId: action.payload.chatId, user: response.data.data.user});
-        // Tell the server that a new message was added via socket.io
-        action.payload.socket.emit('new-message-added', response.data.data.newMessage)
     } catch (error) {
     }
 }
@@ -44,7 +39,7 @@ export function* joinChatSaga(action) {
 export function* leaveChatSaga(action) {
     yield put(actions.leaveChatStart());
     try {
-        const response = yield axios.delete(`/api/chats/${action.payload.chatId}/members/${action.payload.userId}`, {
+        yield axios.delete(`/api/chats/${action.payload.chatId}/members/${action.payload.userId}`, {
             headers: {
                 Authorization: `Bearer ${localStorage.getItem('token')}`
             }
@@ -52,18 +47,8 @@ export function* leaveChatSaga(action) {
         yield put(
             actions.leaveChatSuccess(action.payload.chatId, action.payload.userId)
         );
-        // Tell the server that a new message was added via socket.io
-        for (let i = 0; i < response.data.data.newMessages.length; i++) {
-            yield put(
-                actions.addMessageSuccess(response.data.data.newMessages[i])
-            );
-        }
-        // Tell the server that a new message was added via socket.io
+        // Tell the server that a user left the chat via socket.io
         action.payload.socket.emit('left-chat', { chatId: action.payload.chatId, userId: action.payload.userId});
-        // Tell the server that a new message was added via socket.io
-        for (let i = 0; i < response.data.data.newMessages.length; i++) {
-            action.payload.socket.emit('new-message-added', response.data.data.newMessages[i])
-        }
     } catch (error) {
     }
 }
